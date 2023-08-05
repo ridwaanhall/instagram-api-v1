@@ -1,2 +1,2 @@
 # instagram-api
-this api using required to install instaloader
+to use this api, you only add an username in instagram after base url.
