@@ -2,6 +2,198 @@ import requests
 import json
 import random
 
+def code_response(response):
+    code = response.status_code
+    if code == 200:
+        try:
+            parsed_json = response.json()
+            return parsed_json
+        except json.JSONDecodeError:
+            return {"error": "Unable to parse JSON response."}
+    elif code == 429:
+        return {
+            "code": 429,
+            "message": "Too Many Requests",
+            "message_from_owners": "Jangan spam, cooldown 1 menit."
+        }
+    elif code == 300:
+        return {
+            "code": 300,
+            "message": "Multiple Choices"
+        }
+    elif code == 301:
+        return {
+            "code": 301,
+            "message": "Moved Permanently"
+        }
+    elif code == 302:
+        return {
+            "code": 302,
+            "message": "Found (or Moved Temporarily)"
+        }
+    elif code == 304:
+        return {
+            "code": 304,
+            "message": "Not Modified"
+        }
+    elif code == 307:
+        return {
+            "code": 307,
+            "message": "Temporary Redirect"
+        }
+    elif code == 308:
+        return {
+            "code": 308,
+            "message": "Permanent Redirect"
+        }
+    elif code == 400:
+        return {
+            "code": 400,
+            "message": "Bad Request"
+        }
+    elif code == 401:
+        return {
+            "code": 401,
+            "message": "Unauthorized"
+        }
+    elif code == 403:
+        return {
+            "code": 403,
+            "message": "Forbidden"
+        }
+    elif code == 404:
+        return {
+            "code": 404,
+            "message": "Not Found"
+        }
+    elif code == 405:
+        return {
+            "code": 405,
+            "message": "Method Not Allowed"
+        }
+    elif code == 406:
+        return {
+            "code": 406,
+            "message": "Not Acceptable"
+        }
+    elif code == 407:
+        return {
+            "code": 407,
+            "message": "Proxy Authentication Required"
+        }
+    elif code == 408:
+        return {
+            "code": 408,
+            "message": "Request Timeout"
+        }
+    elif code == 409:
+        return {
+            "code": 409,
+            "message": "Conflict"
+        }
+    elif code == 410:
+        return {
+            "code": 410,
+            "message": "Gone"
+        }
+    elif code == 411:
+        return {
+            "code": 411,
+            "message": "Length Required"
+        }
+    elif code == 412:
+        return {
+            "code": 412,
+            "message": "Precondition Failed"
+        }
+    elif code == 413:
+        return {
+            "code": 413,
+            "message": "Payload Too Large"
+        }
+    elif code == 414:
+        return {
+            "code": 414,
+            "message": "URI Too Long"
+        }
+    elif code == 415:
+        return {
+            "code": 415,
+            "message": "Unsupported Media Type"
+        }
+    elif code == 416:
+        return {
+            "code": 416,
+            "message": "Range Not Satisfiable"
+        }
+    elif code == 417:
+        return {
+            "code": 417,
+            "message": "Expectation Failed"
+        }
+    elif code == 418:
+        return {
+            "code": 418,
+            "message": "I'm a teapot"
+        }
+    elif code == 421:
+        return {
+            "code": 421,
+            "message": "Misdirected Request"
+        }
+    elif code == 422:
+        return {
+            "code": 422,
+            "message": "Unprocessable Entity"
+        }
+    elif code == 431:
+        return {
+            "code": 431,
+            "message": "Request Header Fields Too Large"
+        }
+    elif code == 451:
+        return {
+            "code": 451,
+            "message": "Unavailable For Legal Reasons"
+        }
+    elif code == 500:
+        return {
+            "code": 500,
+            "message": "Internal Server Error"
+        }
+    elif code == 501:
+        return {
+            "code": 501,
+            "message": "Not Implemented"
+        }
+    elif code == 502:
+        return {
+            "code": 502,
+            "message": "Bad Gateway"
+        }
+    elif code == 503:
+        return {
+            "code": 503,
+            "message": "Service Unavailable"
+        }
+    elif code == 504:
+        return {
+            "code": 504,
+            "message": "Gateway Timeout"
+        }
+    elif code == 505:
+        return {
+            "code": 505,
+            "message": "HTTP Version Not Supported"
+        }
+    elif code == 511:
+        return {
+            "code": 511,
+            "message": "Network Authentication Required"
+        }
+    else:
+        return {"error": f"Request failed with status code {code}"}
+
 user_agents = [
     {
         "user_agent": "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36 Edg/88.0.705.74",
@@ -133,17 +325,17 @@ user_agents = [
   ]
 
 def get_random_user_agent():
-    return random.choice(user_agents)["user_agent"]
+  return random.choice(user_agents)["user_agent"]
 
 def process_instagram_profile(username):
     url = "https://www.save-free.com/process"
     headers = {
-      "Origin": "https://www.save-free.com",
-      "Referer": "https://www.save-free.com/id/profile-downloader/",
-      "User-Agent": get_random_user_agent(),
-      "X-Valy-Cache": "accpted"
+        "Origin": "https://www.save-free.com",
+        "Referer": "https://www.save-free.com/id/profile-downloader/",
+        "User-Agent": get_random_user_agent(),
+        "X-Valy-Cache": "accpted"
     }
-    #print(get_random_user_agent())
+
     payload = {
         "instagram_url": username,
         "type": "profile",
@@ -152,197 +344,94 @@ def process_instagram_profile(username):
 
     response = requests.post(url, data=payload, headers=headers)
 
+    # Call code_response function to handle response status code
+    response_data = code_response(response)
+
+    # Check if there was an error in code_response
+    if "error" in response_data:
+        return response_data
+
+    # If response code is 200, we have a successful response
     if response.status_code == 200:
         try:
             parsed_json = response.json()
             return parsed_json
-
         except json.JSONDecodeError:
             return {"error": "Unable to parse JSON response."}
-    elif response.status_code == 429:
-        return {
-            "code": 429,
-            "message": "Too Many Requests"
-        }
-    elif response.status_code == 300:
-        return {
-            "code": 300,
-            "message": "Multiple Choices"
-        }
-    elif response.status_code == 301:
-        return {
-            "code": 301,
-            "message": "Moved Permanently"
-        }
-    elif response.status_code == 302:
-        return {
-            "code": 302,
-            "message": "Found (or Moved Temporarily)"
-        }
-    elif response.status_code == 304:
-        return {
-            "code": 304,
-            "message": "Not Modified"
-        }
-    elif response.status_code == 307:
-        return {
-            "code": 307,
-            "message": "Temporary Redirect"
-        }
-    elif response.status_code == 308:
-        return {
-            "code": 308,
-            "message": "Permanent Redirect"
-        }
-    elif response.status_code == 400:
-        return {
-            "code": 400,
-            "message": "Bad Request"
-        }
-    elif response.status_code == 401:
-        return {
-            "code": 401,
-            "message": "Unauthorized"
-        }
-    elif response.status_code == 403:
-        return {
-            "code": 403,
-            "message": "Forbidden"
-        }
-    elif response.status_code == 404:
-        return {
-            "code": 404,
-            "message": "Not Found"
-        }
-    elif response.status_code == 405:
-        return {
-            "code": 405,
-            "message": "Method Not Allowed"
-        }
-    elif response.status_code == 406:
-        return {
-            "code": 406,
-            "message": "Not Acceptable"
-        }
-    elif response.status_code == 407:
-        return {
-            "code": 407,
-            "message": "Proxy Authentication Required"
-        }
-    elif response.status_code == 408:
-        return {
-            "code": 408,
-            "message": "Request Timeout"
-        }
-    elif response.status_code == 409:
-        return {
-            "code": 409,
-            "message": "Conflict"
-        }
-    elif response.status_code == 410:
-        return {
-            "code": 410,
-            "message": "Gone"
-        }
-    elif response.status_code == 411:
-        return {
-            "code": 411,
-            "message": "Length Required"
-        }
-    elif response.status_code == 412:
-        return {
-            "code": 412,
-            "message": "Precondition Failed"
-        }
-    elif response.status_code == 413:
-        return {
-            "code": 413,
-            "message": "Payload Too Large"
-        }
-    elif response.status_code == 414:
-        return {
-            "code": 414,
-            "message": "URI Too Long"
-        }
-    elif response.status_code == 415:
-        return {
-            "code": 415,
-            "message": "Unsupported Media Type"
-        }
-    elif response.status_code == 416:
-        return {
-            "code": 416,
-            "message": "Range Not Satisfiable"
-        }
-    elif response.status_code == 417:
-        return {
-            "code": 417,
-            "message": "Expectation Failed"
-        }
-    elif response.status_code == 418:
-        return {
-            "code": 418,
-            "message": "I'm a teapot"
-        }
-    elif response.status_code == 421:
-        return {
-            "code": 421,
-            "message": "Misdirected Request"
-        }
-    elif response.status_code == 422:
-        return {
-            "code": 422,
-            "message": "Unprocessable Entity"
-        }
-    elif response.status_code == 429:
-        return {
-            "code": 429,
-            "message": "Too Many Requests"
-        }
-    elif response.status_code == 431:
-        return {
-            "code": 431,
-            "message": "Request Header Fields Too Large"
-        }
-    elif response.status_code == 451:
-        return {
-            "code": 451,
-            "message": "Unavailable For Legal Reasons"
-        }
-    elif response.status_code == 500:
-        return {
-            "code": 500,
-            "message": "Internal Server Error"
-        }
-    elif response.status_code == 501:
-        return {
-            "code": 501,
-            "message": "Not Implemented"
-        }
-    elif response.status_code == 502:
-        return {
-            "code": 502,
-            "message": "Bad Gateway"
-        }
-    elif response.status_code == 503:
-        return {
-            "code": 503,
-            "message": "Service Unavailable"
-        }
-    elif response.status_code == 504:
-        return {
-            "code": 504,
-            "message": "Gateway Timeout"
-        }
-    elif response.status_code == 505:
-        return {
-            "code": 505,
-            "message": "HTTP Version Not Supported"
-        }
-    elif response.status_code == 511:
-        return {
-            "code": 511,
-            "message": "Network Authentication Required"
-        }
     else:
-        return {"error": f"Request failed with status code {response.status_code}"}
+        # For other response codes, return the response_data from code_response
+        return response_data
+
+def process_instagram_story(username):
+    url = "https://www.save-free.com/process"
+    headers = {
+        "Origin": "https://www.save-free.com",
+        "Referer": "https://www.save-free.com/id/profile-downloader/",
+        "User-Agent": get_random_user_agent(),
+        "X-Valy-Cache": "accpted"
+    }
+  
+    payload = {
+        "instagram_url": username,
+        "type": "story",
+        "resource": "save"
+    }
+
+    response = requests.post(url, data=payload, headers=headers)
+
+    # Call code_response function to handle response status code
+    response_data = code_response(response)
+
+    # Check if there was an error in code_response
+    if "error" in response_data:
+        return response_data
+
+    # If response code is 200, we have a successful response
+    if response.status_code == 200:
+        try:
+            parsed_json = response.json()
+            return parsed_json
+        except json.JSONDecodeError:
+            return {"error": "Unable to parse JSON response."}
+    else:
+        # For other response codes, return the response_data from code_response
+        return response_data
+
+def process_instagram_media():
+    url = "https://www.save-free.com/process"
+    headers = {
+    "Accept": "text/html, */*; q=0.01",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Content-Length": "52",
+    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "Cookie": "HstCfa4752989=1690994010962; HstCla4752989=1690994010962; ... (add the other cookies)",
+    "Origin": "https://www.save-free.com",
+    "Referer": "https://www.save-free.com/id/profile-downloader/",
+    "Sec-Ch-Ua": "\"Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"115\", \"Chromium\";v=\"115\"",
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": "\"Windows\"",
+    "Sec-Fetch-Dest": "empty",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Site": "same-origin",
+    "User-Agent": get_random_user_agent(),
+    "X-Requested-With": "XMLHttpRequest",
+    "X-Valy-Cache": "accpted"
+    }
+  
+    payload = {
+        "instagram_url": "https://www.instagram.com/p/CvldjpRPVXx/",
+        "type": "media",
+        "resource": "save"
+    }
+
+    response = requests.post(url, data=payload, headers=headers)
+
+    # For debugging purposes, print the actual response content
+    print("Response content:", response.content)
+    try:
+        parsed_json = response.json()
+        return parsed_json
+    except json.JSONDecodeError:
+        # If unable to parse JSON, return the error message
+        return {"error": "Unable to parse JSON response."}
