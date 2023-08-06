@@ -1,2 +1,2 @@
 # instagram-api
-to use this api, you only add an username in instagram after base url.
+to use this api, you can go to base url to read how to do.
