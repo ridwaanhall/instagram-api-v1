@@ -11,7 +11,7 @@ def home():
     }],
     'owner': [{
       'name': 'ridwaanhall',
-      'address': 'Sleman, DIY',
+      'address': 'N/A',
       'my_love': 'Afida'
     }],
     'social_media': [{
@@ -49,7 +49,7 @@ def home():
       'in development stage. for download reels, posts, videos, photos.'
     }],
     'source':
-    'pddikti'
+    'save-free'
   }
 
 @app.route('/profile/<username>')
